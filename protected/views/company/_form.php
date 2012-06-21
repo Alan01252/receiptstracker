@@ -7,7 +7,7 @@
 
 	<?php echo $form->errorSummary($model); ?>
 
-	<?php echo $form->textFieldRow($model,'name',array('class'=>'span5','maxlength'=>255)); ?>
+	<?php echo $form->textFieldRow($model,'name',array('class'=>'span5','maxlength'=>255,'placeholder'=>'Enter a company name')); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.BootButton', array(

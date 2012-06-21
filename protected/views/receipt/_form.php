@@ -22,17 +22,18 @@
 	     		}"
 			),
 	     'htmlOptions'=>array(
-	         'style'=>'height:20px;'
+	         'style'=>'height:20px;',
+	     	 'placeholder'=>'Enter a company name'
 	     ),
 		)); ?>
  
-	<?php echo $form->textFieldRow($model,'goods',array('class'=>'span5','maxlength'=>10)); ?>
+	<?php echo $form->textFieldRow($model,'goods',array('class'=>'span5','maxlength'=>10,'placeholder'=>'Enter a goods amount')); ?>
 
-	<?php echo $form->textFieldRow($model,'vat',array('class'=>'span5','maxlength'=>10)); ?>
+	<?php echo $form->textFieldRow($model,'vat',array('class'=>'span5','maxlength'=>10,'placeholder'=>'Enter a VAT amount')); ?>
 
-	<?php echo $form->textFieldRow($model,'total',array('class'=>'span5','maxlength'=>10)); ?>
+	<?php echo $form->textFieldRow($model,'total',array('class'=>'span5','maxlength'=>10,'placeholder'=>'Enter a total amount')); ?>
 
-	<?php echo $form->datepickerRow($model,'date',array('class'=>'span5','options'=>array('dateFormat'=>'yy-mm-dd'))); ?>
+	<?php echo $form->datepickerRow($model,'date',array('class'=>'span5','placeholder'=>'Pick a date','options'=>array('dateFormat'=>'yy-mm-dd'))); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.BootButton', array(
