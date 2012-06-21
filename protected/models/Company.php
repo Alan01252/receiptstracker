@@ -65,7 +65,7 @@ class Company extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'name' => 'Name',
+			'name' => 'Company Name',
 		);
 	}
 

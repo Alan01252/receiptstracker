@@ -2,21 +2,21 @@
 	'id'=>'receipt-form',
 	'enableAjaxValidation'=>false,
 )); ?>
-
 	<p class="help-block">Fields with <span class="required">*</span> are required.</p>
 
 	<?php echo $form->errorSummary($model); ?>
 
 
-	<input type="hidden" name='Receipt[companyid]' id='companyid'>
+	<input type="hidden" name='Receipt[companyid]' id='companyid' value= <?php echo $model->getAttribute('companyid');?>>
 	
 	 <?php echo CHtml::activeLabel($model,'Company'); ?>
 	
 	<?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-	     'name'=>'companyselector',
+	     'name'=>'Receipt[companyname]',
+		 'value' =>$model->getCompanyName(),
 	     'source'=>CController::createUrl('company/search'),
 	     'options'=>array(
-	         'minLength'=>'1',
+	        'minLength'=>'1',
 	     	 'select'=>"js:function(event, ui) {
 	     			$('#companyid').val(ui.item.id);
 	     		}"
@@ -32,7 +32,7 @@
 
 	<?php echo $form->textFieldRow($model,'total',array('class'=>'span5','maxlength'=>10)); ?>
 
-	<?php echo $form->textFieldRow($model,'date',array('class'=>'span5')); ?>
+	<?php echo $form->datepickerRow($model,'date',array('class'=>'span5','options'=>array('dateFormat'=>'yy-mm-dd'))); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.BootButton', array(

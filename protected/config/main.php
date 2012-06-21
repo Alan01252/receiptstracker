@@ -88,6 +88,9 @@ return array(
 		'bootstrap'=>array(
         	'class'=>'ext.bootstrap.components.Bootstrap', // assuming you extracted bootstrap under extensions
     	),
+		'ECSVExport'=>array(
+			 'class'=>'ext.ECSVExport.ECSVExport',
+		),
 	),
 
 	// application-level parameters that can be accessed

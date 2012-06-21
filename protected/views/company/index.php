@@ -14,4 +14,12 @@ $this->menu=array(
 <?php $this->widget('bootstrap.widgets.BootGridView', array(
     'type'=>'striped bordered condensed',
     'dataProvider'=>$dataProvider,
+	'columns'=>array(
+			'id',
+			'name',
+			array(
+					'class'=>'bootstrap.widgets.BootButtonColumn',
+					'htmlOptions'=>array('style'=>'width: 50px'),
+			),
+		),
 )); ?>

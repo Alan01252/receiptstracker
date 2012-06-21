@@ -27,15 +27,14 @@ class ReceiptController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update','index','view','delete','export'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin','delete'),
+				'actions'=>array('admin'),
 				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
@@ -68,9 +67,19 @@ class ReceiptController extends Controller
 
 		if(isset($_POST['Receipt']))
 		{
+			
 			$model->attributes=$_POST['Receipt'];
+			if(!$model->getAttribute('companyid')){
+				$company = new Company();
+				$company->setAttribute('name', $_POST['Receipt']['companyname']);
+				$company->save();
+				$model->setAttribute('companyid', $company->id);
+			}
+			
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
+			
+			return;
 		}
 
 		$this->renderView($model,'create');
@@ -84,7 +93,7 @@ class ReceiptController extends Controller
 	 */
 	public function actionUpdate($id)
 	{
-		$model=$this->loadModel($id);
+		$model=$this->loadModel($id)->with('company');
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -134,17 +143,55 @@ class ReceiptController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Receipt',
-												array('criteria'=>array(
-																	'with'=>array('company')
-																	)
-											));
+		$dataProvider=new CActiveDataProvider('Receipt',array('criteria'=>array('with'=>array('company'))));
 		
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
 	}
 
+	/**
+	 * Export to csv
+	 */
+	
+	public function actionExport()
+	{
+		Yii::import('ext.ECSVExport.ECSVExport');
+		
+		
+		$dataProvider=new CActiveDataProvider('Receipt',array('criteria'=>array('with'=>array('company'))));
+		
+		/**
+		 * Excel export has a problem with joins
+		 */
+		$firstItem = false;
+		$headers = null;
+		$csvLine = null;
+		
+		foreach($dataProvider->getData() as $receipt) {
+			if(!$firstItem) {
+				$headers = $receipt->attributeLabels();
+				$firstItem = true;
+			}
+			foreach($receipt->getAttributes() as $attributeKey => $value) {
+				$csvLine[$attributeKey] = $value;
+			}
+			
+			$csvLine['CompanyName'] = $receipt->company->getAttribute('name');
+			$csvLines[] = $csvLine;
+		}
+		
+		$csv = new ECSVExport($csvLines);
+		$csv->setHeaders($headers);
+		$output = $csv->toCSV();
+		
+		header("Content-type: text/csv");
+		header("Cache-Control: no-store, no-cache");
+		header('Content-Disposition: attachment; filename="RecieptExport'.date('Y-m-d').'.csv"');
+		
+		echo $output;
+	}
+	
 	/**
 	 * Manages all models.
 	 */

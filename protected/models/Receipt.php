@@ -42,7 +42,7 @@ class Receipt extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('companyid, goods, vat, total, date', 'required'),
+			array('goods, vat, total, date', 'required'),
 			array('companyid', 'numerical', 'integerOnly'=>true),
 			array('goods, vat, total', 'length', 'max'=>10),
 			// The following rule is used by search().
@@ -50,7 +50,13 @@ class Receipt extends CActiveRecord
 			array('id, companyid, goods, vat, total, date', 'safe', 'on'=>'search'),
 		);
 	}
-
+	public function getCompanyName()
+	{
+		if($this->company) {
+			return $this->company->getAttribute('name');
+		}
+		return null;
+	}
 	/**
 	 * @return array relational rules.
 	 */
