@@ -29,7 +29,7 @@ $form = $this->beginWidget('bootstrap.widgets.BootActiveForm', array(
 	<?php echo CHtml::errorSummary($model); ?>
 	
 	<?php echo $form->textFieldRow($model,'username',array('class'=>'span3')); ?>
-	<?php echo $form->textFieldRow($model,'password',array('class'=>'span3')); ?>
+	<?php echo $form->passwordFieldRow($model,'password',array('class'=>'span3')); ?>
 
 	
 	<div>

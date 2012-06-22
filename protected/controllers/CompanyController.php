@@ -27,11 +27,11 @@ class CompanyController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view','search','delete'),
+				'actions'=>array(),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','delete'),
+				'actions'=>array('index','view','search','create','update','delete'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -51,7 +51,7 @@ class CompanyController extends Controller
 	public function actionView($id)
 	{
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+				'model'=>$this->loadModel($id),
 		));
 	}
 
@@ -69,6 +69,7 @@ class CompanyController extends Controller
 		if(isset($_POST['Company']))
 		{
 			$model->attributes=$_POST['Company'];
+			$model->setAttribute('userid', Yii::app()->user->id);
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -86,20 +87,21 @@ class CompanyController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['Company']))
-		{
-			$model->attributes=$_POST['Company'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+		if($model->userid === Yii::app()->user->id){
+			// Uncomment the following line if AJAX validation is needed
+			// $this->performAjaxValidation($model);
+	
+			if(isset($_POST['Company']))
+			{
+				$model->attributes=$_POST['Company'];
+				if($model->save())
+					$this->redirect(array('view','id'=>$model->id));
+			}
+	
+			$this->render('update',array(
+				'model'=>$model,
+			));
 		}
-
-		$this->render('update',array(
-			'model'=>$model,
-		));
 	}
 
 	/**
@@ -113,10 +115,9 @@ class CompanyController extends Controller
 		{
 			// we only allow deletion via POST request
 			$this->loadModel($id)->delete();
-
-			// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-			if(!isset($_GET['ajax']))
-				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+				// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
+				if(!isset($_GET['ajax']))
+					$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 		}
 		else
 			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
@@ -127,7 +128,8 @@ class CompanyController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Company');
+		$dataProvider=new CActiveDataProvider('Company',array('criteria'=>array('condition'=>'userid='.Yii::app()->user->id.'')));
+				
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -141,9 +143,11 @@ class CompanyController extends Controller
 	{
 		$model=new Company('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Company']))
+		if(isset($_GET['Company'])) {
 			$model->attributes=$_GET['Company'];
-
+			$model->user = Yii::app()->user->id;
+		}
+	
 		$this->render('admin',array(
 			'model'=>$model,
 		));
@@ -153,7 +157,8 @@ class CompanyController extends Controller
 	{
 		$criteria=new CDbCriteria;
 		$criteria->addSearchCondition('name', $_GET['term']);
-	
+		$criteria->addSearchCondition('userid', Yii::app()->user->id);
+		
 		$companies = Company::model()->findAll($criteria);
 		
 		if($companies) {
@@ -175,6 +180,9 @@ class CompanyController extends Controller
 	public function loadModel($id)
 	{
 		$model=Company::model()->findByPk($id);
+		if($model->userid !== Yii::app()->user->id){
+			throw new CHttpException(500,'Unable to load this model.');
+		}
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

@@ -27,6 +27,7 @@ class ReceiptController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
+				'actions'=>array(),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -70,10 +71,14 @@ class ReceiptController extends Controller
 			
 			$model->attributes=$_POST['Receipt'];
 			if(!$model->getAttribute('companyid')){
+				
 				$company = new Company();
 				$company->setAttribute('name', $_POST['Receipt']['companyname']);
+				$company->setAttribute('userid', Yii::app()->user->id);
 				$company->save();
+				
 				$model->setAttribute('companyid', $company->id);
+				$model->setAttribute('userid', Yii::app()->user->id);
 			}
 			
 			if($model->save())
@@ -94,7 +99,9 @@ class ReceiptController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id)->with('company');
-
+		if($model->userid === Yii::app()->user->id) {
+			
+		}
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
@@ -143,7 +150,7 @@ class ReceiptController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Receipt',array('criteria'=>array('with'=>array('company'))));
+		$dataProvider=new CActiveDataProvider('Receipt',array('criteria'=>array('with'=>array('company'),'condition'=>'t.userid='.Yii::app()->user->id.'')));
 		
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
@@ -159,7 +166,7 @@ class ReceiptController extends Controller
 		Yii::import('ext.ECSVExport.ECSVExport');
 		
 		
-		$dataProvider=new CActiveDataProvider('Receipt',array('criteria'=>array('with'=>array('company'))));
+		$dataProvider=new CActiveDataProvider('Receipt',array('criteria'=>array('with'=>array('company'),'condition'=>'t.userid='.Yii::app()->user->id.'')));
 		
 		/**
 		 * Excel export has a problem with joins
@@ -199,8 +206,10 @@ class ReceiptController extends Controller
 	{
 		$model=new Receipt('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Receipt']))
+		if(isset($_GET['Receipt'])) {
 			$model->attributes=$_GET['Receipt'];
+			$model->user = Yii::app()->user->id;
+		}
 
 		$this->render('admin',array(
 			'model'=>$model,
@@ -215,6 +224,11 @@ class ReceiptController extends Controller
 	public function loadModel($id)
 	{
 		$model=Receipt::model()->findByPk($id);
+		
+		if($model->userid !== Yii::app()->user->id){
+			throw new CHttpException(500,'Unable to load this model.');
+		}
+		
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
