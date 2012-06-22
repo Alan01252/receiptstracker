@@ -28,8 +28,12 @@
 			array(
 				'class'=>'bootstrap.widgets.BootMenu',
 				'items'=>array(
-					array('label'=>'Manage Companies', 'url'=>array('company/index', 'view'=>'index')),
-					array('label'=>'Manage Receipts', 'url'=>array('receipt/index','view'=>'index')),
+					array('label'=>'Manage Companies', 'url'=>array('company/index', 'view'=>'index'),'visible'=>!Yii::app()->user->isGuest),
+					array('label'=>'Manage Receipts', 'url'=>array('receipt/index','view'=>'index'),'visible'=>!Yii::app()->user->isGuest),
+					array('url'=>Yii::app()->getModule('user')->loginUrl, 'label'=>Yii::app()->getModule('user')->t("Login"), 'visible'=>Yii::app()->user->isGuest),
+					array('url'=>Yii::app()->getModule('user')->registrationUrl, 'label'=>Yii::app()->getModule('user')->t("Register"), 'visible'=>Yii::app()->user->isGuest),
+					array('url'=>Yii::app()->getModule('user')->profileUrl, 'label'=>Yii::app()->getModule('user')->t("Profile"), 'visible'=>!Yii::app()->user->isGuest),
+					array('url'=>Yii::app()->getModule('user')->logoutUrl, 'label'=>Yii::app()->getModule('user')->t("Logout").' ('.Yii::app()->user->name.')', 'visible'=>!Yii::app()->user->isGuest),
 				),
 			),
 		),
