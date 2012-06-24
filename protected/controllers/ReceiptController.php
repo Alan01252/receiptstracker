@@ -76,10 +76,9 @@ class ReceiptController extends Controller
 				$company->setAttribute('name', $_POST['Receipt']['companyname']);
 				$company->setAttribute('userid', Yii::app()->user->id);
 				$company->save();
-				
 				$model->setAttribute('companyid', $company->id);
-				$model->setAttribute('userid', Yii::app()->user->id);
-			}
+			}	
+			$model->setAttribute('userid', Yii::app()->user->id);
 			
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -99,9 +98,6 @@ class ReceiptController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id)->with('company');
-		if($model->userid === Yii::app()->user->id) {
-			
-		}
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
