@@ -9,6 +9,9 @@ return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'Receipt Tracker',
 	'theme'=>'classic',
+	'sourceLanguage' => 'en_uk',
+	'language' => 'gb',
+		
 	// preloading 'log' component
 	'preload'=>array('log',
 					  'bootstrap',),
@@ -57,7 +60,7 @@ return array(
 				'loginUrl' => array('/user/login'),
 		
 				# page after login
-				'returnUrl' => array('/user/profile'),
+				'returnUrl' => array('/receipt/create'),
 		
 				# page after logout
 				'returnLogoutUrl' => array('/user/login'),
@@ -74,6 +77,8 @@ return array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
+			# page after login
+			'returnUrl' => array('receipt/create'),
 		),
 		'fixture'=>array(
 			'class'=>'system.test.CDbFixtureManager',
@@ -128,6 +133,7 @@ return array(
 		'ECSVExport'=>array(
 			 'class'=>'ext.ECSVExport.ECSVExport',
 		),
+
 	),
 
 	// application-level parameters that can be accessed
